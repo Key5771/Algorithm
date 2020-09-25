@@ -57,38 +57,81 @@ import UIKit
 
 
 
-let id_list = ["A B C D", "A D", "A B D", "B D"]
-let k = 2
+//let id_list = ["A B C D", "A D", "A B D", "B D"]
+//let k = 2
+//
+//let id_list2 = ["JAY", "JAY ELLE JAY MAY", "MAY ELLE MAY", "ELLE MAY", "ELLE ELLE ELLE", "MAY"]
+//let k2 = 3
+//
+//func solution(_ id_list: [String], _ k: Int) -> Int {
+//    var answer = 0
+//    var dict = [String: Int]()
+//
+//    for i in 0..<id_list.count {
+//        let arr = Array(Set(id_list[i].split(separator: " ").map { String($0) }))
+//
+//        for j in 0..<arr.count {
+//            if dict[arr[j]] == nil {
+//                dict[arr[j]] = 1
+//            } else {
+//                dict[arr[j]]! += 1
+//            }
+//        }
+//    }
+//
+//    for (_, value) in dict {
+//        if value >= k {
+//            answer += k
+//        } else {
+//            answer += value
+//        }
+//    }
+//
+//    return answer
+//}
+//
+//print(solution(id_list, k))
+//print(solution(id_list2, k2))
 
-let id_list2 = ["JAY", "JAY ELLE JAY MAY", "MAY ELLE MAY", "ELLE MAY", "ELLE ELLE ELLE", "MAY"]
-let k2 = 3
 
-func solution(_ id_list: [String], _ k: Int) -> Int {
-    var answer = 0
-    var dict = [String: Int]()
+
+let N = 5
+let number = 12
+
+let N2 = 2
+let number2 = 11
+
+import Foundation
+
+func solution(_ N:Int, _ number:Int) -> Int {
+    if N == number { return 1 }
+    return step(state: [[],[N],[justNumber(N, reapeat: 2), N*N, N+N, 1]], N: N, counter: 2, Number: number)
+}
+
+func step(state: [Set<Int>], N: Int, counter: Int, Number: Int) -> Int {
+    if counter > 8 { return -1 }
+    if let last = state.last, last.contains(Number) { return counter }
     
-    for i in 0..<id_list.count {
-        let arr = Array(Set(id_list[i].split(separator: " ").map { String($0) }))
+    var newState: Set<Int> = [justNumber(N, reapeat: counter + 1)]
         
-        for j in 0..<arr.count {
-            if dict[arr[j]] == nil {
-                dict[arr[j]] = 1
-            } else {
-                dict[arr[j]]! += 1
+    for i in 1..<counter+1 {
+        state[i].forEach { x in
+            state[counter+1 - i].forEach { y in
+                let newValues = [x+y, x-y, x/y, x*y]
+                                
+                newValues.forEach { new in
+                    guard new != 0 else { return }
+                    newState.insert(new)
+                }
             }
         }
     }
-    
-    for (_, value) in dict {
-        if value >= k {
-            answer += k
-        } else {
-            answer += value
-        }
-    }
-    
-    return answer
+    return step(state: state + [newState], N: N, counter: counter + 1, Number: Number)
 }
 
-print(solution(id_list, k))
-print(solution(id_list2, k2))
+func justNumber(_ N: Int, reapeat: Int) -> Int {
+    return Int(String(repeating: String(N), count: reapeat))!
+}
+
+print(solution(N, number))
+print(solution(N2, number2))
